@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Portfolio Of Malcolm Walker</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+
+body{
+margin:0;
+background:black;
+color:#00ff9f;
+font-family:Courier New;
+overflow:hidden;
+}
+
+/* title */
+
+.title{
+position:fixed;
+top:20px;
+width:100%;
+text-align:center;
+font-size:42px;
+z-index:10;
+animation:glitch 1s infinite;
+}
+
+@keyframes glitch{
+0%{text-shadow:2px 2px red;}
+25%{text-shadow:-2px 0 cyan;}
+50%{text-shadow:2px -2px lime;}
+75%{text-shadow:-2px 2px magenta;}
+100%{text-shadow:2px 2px red;}
+}
+
+/* navigation */
+
+nav{
+position:fixed;
+top:100px;
+width:100%;
+text-align:center;
+z-index:10;
+}
+
+nav button{
+background:black;
+border:1px solid #00ff9f;
+color:#00ff9f;
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
+}
+
+/* pages */
+
+.page{
+display:none;
+position:fixed;
+top:170px;
+left:50%;
+transform:translateX(-50%);
+width:500px;
+z-index:10;
+}
+
+.page.active{
+display:block;
+}
+
+.panel{
+border:1px solid #00ff9f;
+box-shadow:0 0 15px #00ff9f;
+background:rgba(0,0,0,0.85);
+padding:20px;
+}
+
+/* world attack map */
+
+#map{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:300px;
+z-index:1;
+}
+
+/* radar */
+
+#radar{
+position:fixed;
+right:20px;
+top:200px;
+width:250px;
+height:250px;
+z-index:10;
+}
+
+/* heatmap */
+
+#heatmap{
+position:fixed;
+left:20px;
+top:200px;
+width:250px;
+height:250px;
+z-index:10;
+}
+
+/* globe */
+
+#globe{
+position:fixed;
+right:95px;
+top:95px;
+width:300px;
+height:300px;
+z-index:10;
+}
+
+/* terminal */
+
+#terminalBox{
+position:fixed;
+bottom:320px;
+left:20px;
+width:250px;
+height:220px;
+z-index:10;
+}
+
+#terminal{
+height:150px;
+overflow:auto;
+font-size:13px;
+}
+
+#cmd{
+width:100%;
+background:black;
+border:none;
+color:#00ff9f;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1 class="title">Portfolio Of Malcolm Walker</h1>
+
+<nav>
+
+<button onclick="showPage('about')">About</button>
+<button onclick="showPage('working')">Working On</button>
+<button onclick="showPage('achievements')">Achievements</button>
+<button onclick="showPage('projects')">Projects</button>
+<button onclick="showPage('contact')">Contact</button>
+
+</nav>
+
+<!-- pages -->
+
+<div id="about" class="page panel active">
+<h2>About</h2>
+Cybersecurity enthusiast focusing on threat detection and network defense.
+</div>
+
+<div id="working" class="page panel">
+<h2>Working On</h2>
+Building SOC dashboards and cyber defense monitoring systems.
+Building a modern design swimming pool website.
+Building labs to practice ethical hacking and penetration testing. 
+Build a AD hacking lab so i can test BlackArch linux and Kali on it.
+Automating scripts for Windows & Linux using CMD, Powershell and Linux.
+
+</div>
+
+<div id="achievements" class="page panel">
+<h2>Achievements</h2>
+<ul>
+<li>Cybersecurity labs</li>
+<li>Network monitoring tools</li>
+<li>Security automation scripts</li>
+<li>Digital forensic practice and training</li>
+<li>Malware & virus behaviour</li>
+<li>Automating scripts for Linux & Windows</li>
+
+</ul>
+</div>
+
+<div id="projects" class="page panel">
+<h2>Projects</h2>
+Security dashboards, vulnerability scanners, threat monitoring tools.
+Malware analysis lab, AD Hacking lab with Kali linux or BlackArch linux.
+Digital Forensic lab for practice and training.
+
+</div>
+
+<div id="contact" class="page panel">
+<h2>Contact</h2>
+Email: malcolmwalker468@yahoo.com                                                                 //
+Phone: +27 613568681
+</div>
+
+<!-- terminal -->
+
+<div id="terminalBox" class="panel">
+
+<b>Cyber Command Shell</b>
+
+<div id="terminal"></div>
+
+<input id="cmd" placeholder="type command">
+
+</div>
+
+<!-- radar -->
+
+<canvas id="radar"></canvas>
+
+<!-- heatmap -->
+
+<canvas id="heatmap"></canvas>
+
+<!-- globe -->
+
+<div id="globe"></div>
+
+<!-- attack map -->
+
+<canvas id="map"></canvas>
+
+<script>
+
+/* page switch */
+
+function showPage(id){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active")
+})
+
+document.getElementById(id).classList.add("active")
+
+}
+
+/* terminal */
+
+const terminal=document.getElementById("terminal")
+const cmd=document.getElementById("cmd")
+
+cmd.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+let c=cmd.value
+
+terminal.innerHTML+="> "+c+"<br>"
+
+if(c==="help")
+terminal.innerHTML+="commands: help scan whoami clear<br>"
+
+else if(c==="scan")
+terminal.innerHTML+="Scanning global threat database...<br>"
+
+else if(c==="whoami")
+terminal.innerHTML+="visitor@cybernode<br>"
+
+else if(c==="clear")
+terminal.innerHTML=""
+
+else
+terminal.innerHTML+="command not found<br>"
+
+cmd.value=""
+
+}
+
+})
+
+/* radar */
+
+const radar=document.getElementById("radar")
+const rctx=radar.getContext("2d")
+
+radar.width=250
+radar.height=250
+
+let angle=0
+
+function drawRadar(){
+
+rctx.clearRect(0,0,180,180)
+
+rctx.strokeStyle="#00ff9f"
+
+rctx.beginPath()
+rctx.arc(125,125,100,0,Math.PI*2)
+rctx.stroke()
+
+rctx.beginPath()
+rctx.moveTo(125,125)
+
+rctx.lineTo(
+125+100*Math.cos(angle),
+125+100*Math.sin(angle)
+)
+
+rctx.stroke()
+
+angle+=0.05
+
+requestAnimationFrame(drawRadar)
+
+}
+
+drawRadar()
+
+/* heatmap */
+
+const heat=document.getElementById("heatmap")
+const hctx=heat.getContext("2d")
+
+heat.width=250
+heat.height=250
+
+function drawHeat(){
+
+let x=Math.random()*250
+let y=Math.random()*250
+
+hctx.fillStyle="rgba(255,0,0,0.4)"
+hctx.beginPath()
+hctx.arc(x,y,15,0,Math.PI*2)
+hctx.fill()
+
+}
+
+setInterval(drawHeat,400)
+
+/* world attack arcs */
+
+const map=document.getElementById("map")
+const mctx=map.getContext("2d")
+
+map.width=window.innerWidth
+map.height=300
+
+function attack(){
+
+let x1=Math.random()*map.width
+let x2=Math.random()*map.width
+
+mctx.strokeStyle="rgba(0,255,159,0.4)"
+
+mctx.beginPath()
+mctx.moveTo(x1,0)
+mctx.quadraticCurveTo(
+(map.width/2),
+150,
+x2,
+250
+)
+
+mctx.stroke()
+
+}
+
+setInterval(attack,600)
+
+/* 3D globe */
+
+const scene=new THREE.Scene()
+
+const camera=new THREE.PerspectiveCamera(
+75,
+1,
+0.1,
+1000
+)
+
+const renderer=new THREE.WebGLRenderer()
+
+renderer.setSize(300,300)
+
+document.getElementById("globe").appendChild(renderer.domElement)
+
+const geometry=new THREE.SphereGeometry(5,32,32)
+
+const material=new THREE.MeshBasicMaterial({
+wireframe:true,
+color:0x00ff9f
+})
+
+const sphere=new THREE.Mesh(geometry,material)
+
+scene.add(sphere)
+
+camera.position.z=10
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+sphere.rotation.y+=0.01
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
+</script>
+
+</body>
+</html>
